@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
+    <RootNamespace>_3DV_Installer</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y &quot;$(SolutionDir)Tools\&quot; &quot;$(TargetDir)Tools\&quot;&#xD;&#xA;xcopy /Y &quot;$(SolutionDir)NVidia\&quot; &quot;$(TargetDir)NVidia\&quot;" />
+  </Target>
+
+</Project>
