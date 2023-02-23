@@ -48,7 +48,8 @@ namespace MyApp // Note: actual namespace depends on the project name.
         }
 
         // Fix a DCH driver so that 3DV can work. Without this Resource.dat file the
-        // installer fails, and the file is no longer included in DCH builds.
+        // installer fails, and the file is no longer included in DCH builds. 
+        // Requires admin privileges.
         public static void FixDchDriverFor3dVision()
         {
             string sourceFilePath = Path.Combine(Directory.GetCurrentDirectory(), @"Resource.dat");
@@ -61,7 +62,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
         }
 
         // Extract all files from the 3DVision.exe, because we need to patch file versions.
-        private static async void Extract3DVDriver()
+        private static void Extract3DVDriver()
         {
             string sevenZipPath = Path.Combine(Directory.GetCurrentDirectory(), @"Tools\7za.exe");
             string nvidia3DVExe = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia\3DVision.exe");
@@ -85,23 +86,20 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
         private static void Run3DVInstaller()
         {
-            Task.Run(() =>
-            {
-                string _3dVisionSetupPath =  Path.Combine(Directory.GetCurrentDirectory(), @"3DVision\setup.exe");
+            string _3dVisionSetupPath =  Path.Combine(Directory.GetCurrentDirectory(), @"3DVision\setup.exe");
 
-                Console.WriteLine("Starting 3D Vision setup: " + _3dVisionSetupPath);
+            Console.WriteLine("Starting 3D Vision setup: " + _3dVisionSetupPath);
 
-                // Since this is an InstallShield app, we can pass the "/s" flag for a silent install.
-                // This is what the full driver install does.  That leaves 3D installed, but disabled. 
-                // But also does not run the setup wizard, which we don't want anyway.
+            // Since this is an InstallShield app, we can pass the "/s" flag for a silent install.
+            // This is what the full driver install does.  That leaves 3D installed, but disabled. 
+            // But also does not run the setup wizard, which we don't want anyway.
 
-                Process proc = new Process();
-                proc.StartInfo.Arguments = "/s";
-                proc.StartInfo.FileName = _3dVisionSetupPath;
-                proc.Start();
+            Process proc = new Process();
+            proc.StartInfo.Arguments = "/s";
+            proc.StartInfo.FileName = _3dVisionSetupPath;
+            proc.Start();
 
-                proc.WaitForExit();
-            });
+            proc.WaitForExit();
         }
 
         // We want double check that the current system is capable of
