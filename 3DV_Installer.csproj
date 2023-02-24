@@ -13,4 +13,8 @@
     <Exec Command="xcopy /Y &quot;$(SolutionDir)Tools\&quot; &quot;$(TargetDir)Tools\&quot;&#xD;&#xA;xcopy /Y &quot;$(SolutionDir)NVidia\&quot; &quot;$(TargetDir)NVidia\&quot;" />
   </Target>
 
+  <ItemGroup>
+    <PackageReference Include="NvAPIWrapper.Net" Version="0.8.1.101" />
+  </ItemGroup>
+
 </Project>

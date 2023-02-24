@@ -9,6 +9,7 @@
 using Microsoft.VisualBasic;
 using System;
 using System.Diagnostics;
+using NvAPIWrapper;
 
 namespace MyApp // Note: actual namespace depends on the project name.
 {
@@ -46,6 +47,43 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             return 0;
         }
+
+        // ------------------------------------------------------------------------------------------------
+
+        // We want double check that the current system is capable of
+        // doing 3DV. No point in installing if it won't work.
+        private static bool SanityCheck3DV()
+        {
+            // If it's a laptop, 3DV can't work on the main screen because
+            // of some freaking stupid choice NVidia made. It can work on
+            // an external screen though. TODO: hard to check for main screen.
+            if (false)
+                return false;
+
+            // Doesn't run on anything non-NVidia
+            if (!IsNVidiaGPU())
+                return false;
+
+            return true;
+        }
+
+        private static bool IsNVidiaGPU()
+        {
+            try
+            {
+                NVIDIA.Initialize();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            Debug.WriteLine("Ver: {0}", NVIDIA.DriverVersion);
+
+            return true;
+        }
+
+        // ------------------------------------------------------------------------------------------------
 
         // Fix a DCH driver so that 3DV can work. Without this Resource.dat file the
         // installer fails, and the file is no longer included in DCH builds. 
@@ -100,30 +138,6 @@ namespace MyApp // Note: actual namespace depends on the project name.
             proc.Start();
 
             proc.WaitForExit();
-        }
-
-        // We want double check that the current system is capable of
-        // doing 3DV. No point in installing if it won't work.
-        private static bool SanityCheck3DV()
-        {
-            // If it's a laptop, 3DV can't work on the main screen because
-            // of some freaking stupid choice NVidia made. It can work on
-            // an external screen though. TODO: hard to check for main screen.
-            if (false)
-                return false;
-
-            // Doesn't run on anything non-NVidia
-            if (!IsNVidiaGPU())
-                return false;
-
-
-
-            return true;
-        }
-
-        private static bool IsNVidiaGPU()
-        {
-            return true;
         }
 
     }
