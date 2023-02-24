@@ -28,7 +28,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             // Add DCH fix file for 3D Vision installer. This
             // needs to be done before installer is run.
-            //FixDchDriverFor3dVision();
+            FixDchDriverFor3dVision();
 
             // Extract 3D Vision installer files, because we need to tweak
             // individual files.
@@ -94,7 +94,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
         // Requires admin privileges.
         public static void FixDchDriverFor3dVision()
         {
-            string sourceFilePath = Path.Combine(Directory.GetCurrentDirectory(), @"Resource.dat");
+            string sourceFilePath = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia\Resource.dat");
             string destFilePath = @"C:\ProgramData\NVIDIA\Resource.dat";
 
             string nvidiaDirectory = Path.GetDirectoryName(destFilePath);
