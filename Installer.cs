@@ -10,7 +10,7 @@ using System;
 using System.Diagnostics;
 using NvAPIWrapper;
 
-namespace MyApp // Note: actual namespace depends on the project name.
+namespace Install3DV
 {
     internal class Installer
     {
@@ -20,7 +20,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
         {
             if (!SanityCheck3DV())
             {
-                MessageBox.Show("Not an NVidia system.\n Driver cannot be installed.\n");
+                Debug.WriteLine("Not an NVidia system.\n Driver cannot be installed.\n");
                 return -1;
             }
 
