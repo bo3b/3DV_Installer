@@ -6,6 +6,7 @@
 //  Only DCH drivers are expected and supported.
 //  Drivers older or equal to 452.06 are not supported.
 
+using System;
 using System.Diagnostics;
 using NvAPIWrapper;
 
@@ -13,6 +14,8 @@ namespace MyApp // Note: actual namespace depends on the project name.
 {
     internal class Installer
     {
+        static string extracted3DFilesPath = Path.Combine(Directory.GetCurrentDirectory(), @"extracted_3DVision");
+
         static int Main(string[] args)
         {
             if (!SanityCheck3DV())
@@ -60,6 +63,11 @@ namespace MyApp // Note: actual namespace depends on the project name.
             if (!IsNVidiaGPU())
                 return false;
 
+            // Don't run on old drivers that are supported by 3D vision,
+            // and don't need version matching.
+            if (NVIDIA.DriverVersion <= 42531)
+                return false;
+
             return true;
         }
 
@@ -100,27 +108,49 @@ namespace MyApp // Note: actual namespace depends on the project name.
         {
             string sevenZipPath = Path.Combine(Directory.GetCurrentDirectory(), @"Tools\7za.exe");
             string nvidia3DVExe = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia\3DVision.exe");
-            string nvidiaFilesPath = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia3DVision");
 
             Process proc = new Process();
             proc.StartInfo.FileName = sevenZipPath;
             proc.StartInfo.CreateNoWindow = true;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
-            proc.StartInfo.Arguments = "x " + "\"" + nvidia3DVExe + "\"" + " -o" + "\"" + nvidiaFilesPath + "\"" + " -y";
+            proc.StartInfo.Arguments = "x " + "\"" + nvidia3DVExe + "\"" + " -o" + "\"" + extracted3DFilesPath + "\"" + " -y";
 
             proc.Start();
             proc.WaitForExit();
         }
 
+        // Patch the 3D Vision files so that they have a version that matches the
+        // currently installed NVidia video driver. Otherwise installer will fail.
         private static void Patch3DVDriverVersion()
         {
-            throw new NotImplementedException();
+            string      _RcEditExe = Path.Combine(Directory.GetCurrentDirectory(), @"Tools\rcedit.exe");
+            string[]    _3DVisionDriverFiles = { "NvSCPAPI.dll", "NvSCPAPI64.dll" };
+            string      version = NVIDIA.DriverVersion.ToString();
+            string      str_version = "7.17.1" + version.Insert(1, ".");    // Bizarre formatting like 7.17.14.2531
+
+            foreach (string driverFile in _3DVisionDriverFiles)
+            {
+                Debug.WriteLine("Patch {0} version into: {1}", version, driverFile);
+
+                string filePath = Path.Combine(extracted3DFilesPath, driverFile);
+
+                Process process = new Process();
+                process.StartInfo.FileName = _RcEditExe;
+                process.StartInfo.WorkingDirectory = Path.GetDirectoryName(_RcEditExe);
+                process.StartInfo.Arguments = "\"" + filePath + "\"" +
+                                                " --set-product-version " + "\"" + str_version + "\"" +
+                                                " --set-file-version " + "\"" + str_version + "\"";
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.UseShellExecute = false;
+                process.Start();
+                process.WaitForExit();
+            }
         }
 
         private static void Run3DVInstaller()
         {
-            string _3dVisionSetupPath =  Path.Combine(Directory.GetCurrentDirectory(), @"3DVision\setup.exe");
+            string _3dVisionSetupPath =  Path.Combine(extracted3DFilesPath, @"setup.exe");
 
             Debug.WriteLine("Starting 3D Vision setup: {0}", _3dVisionSetupPath);
 
