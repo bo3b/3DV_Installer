@@ -6,8 +6,6 @@
 //  Only DCH drivers are expected and supported.
 //  Drivers older or equal to 452.06 are not supported.
 
-using Microsoft.VisualBasic;
-using System;
 using System.Diagnostics;
 using NvAPIWrapper;
 
@@ -17,11 +15,9 @@ namespace MyApp // Note: actual namespace depends on the project name.
     {
         static int Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             if (!SanityCheck3DV())
             {
-                Console.WriteLine("Not an NVidia system.\n Driver cannot be installed.\n");
+                MessageBox.Show("Not an NVidia system.\n Driver cannot be installed.\n");
                 return -1;
             }
 
@@ -126,7 +122,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
         {
             string _3dVisionSetupPath =  Path.Combine(Directory.GetCurrentDirectory(), @"3DVision\setup.exe");
 
-            Console.WriteLine("Starting 3D Vision setup: " + _3dVisionSetupPath);
+            Debug.WriteLine("Starting 3D Vision setup: {0}", _3dVisionSetupPath);
 
             // Since this is an InstallShield app, we can pass the "/s" flag for a silent install.
             // This is what the full driver install does.  That leaves 3D installed, but disabled. 
