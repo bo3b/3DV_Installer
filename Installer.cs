@@ -8,6 +8,8 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Win32;
+using System.Globalization;
 using NvAPIWrapper;
 
 namespace Install3DV
@@ -40,9 +42,11 @@ namespace Install3DV
             // Install the driver without UI.
             Run3DVInstaller();
 
-            // Reset or change the 3DV control keys?
+            // Reset or change the 3DV control keys.
+            Setup3DVParams();
 
             // Toggle 3D On.
+            Enable3D();
 
             return 0;
         }
@@ -124,10 +128,10 @@ namespace Install3DV
         // currently installed NVidia video driver. Otherwise installer will fail.
         private static void Patch3DVDriverVersion()
         {
-            string      _RcEditExe = Path.Combine(Directory.GetCurrentDirectory(), @"Tools\rcedit.exe");
-            string[]    _3DVisionDriverFiles = { "NvSCPAPI.dll", "NvSCPAPI64.dll" };
-            string      version = NVIDIA.DriverVersion.ToString();
-            string      str_version = "7.17.1" + version.Insert(1, ".");    // Bizarre formatting like 7.17.14.2531
+            string _RcEditExe = Path.Combine(Directory.GetCurrentDirectory(), @"Tools\rcedit.exe");
+            string[] _3DVisionDriverFiles = { "NvSCPAPI.dll", "NvSCPAPI64.dll" };
+            string version = NVIDIA.DriverVersion.ToString();
+            string str_version = "7.17.1" + version.Insert(1, ".");    // Bizarre formatting like 7.17.14.2531
 
             foreach (string driverFile in _3DVisionDriverFiles)
             {
@@ -150,7 +154,7 @@ namespace Install3DV
 
         private static void Run3DVInstaller()
         {
-            string _3dVisionSetupPath =  Path.Combine(extracted3DFilesPath, @"setup.exe");
+            string _3dVisionSetupPath = Path.Combine(extracted3DFilesPath, @"setup.exe");
 
             Debug.WriteLine("Starting 3D Vision setup: {0}", _3dVisionSetupPath);
 
@@ -166,5 +170,73 @@ namespace Install3DV
             proc.WaitForExit();
         }
 
+        // Set up dictionary with a.. stereo3DKeyNames and their default values
+        // as they would be after wizard finishes.
+        public static Dictionary<string, uint> DefaultStereoKeys = new Dictionary<string, uint>()
+        {
+            {"LaserSightEnabled", 1},
+            {"MonitorSize", 9999},
+            {"SnapShotQuality", 50},
+            {"StereoAdvancedHKConfig", 0},
+            {"StereoImageType", 0},
+            {"StereoRefreshRate", 0},
+            {"StereoSeparation", 15},
+            {"StereoDefaultOn", 1},
+            {"EnableWindowedMode", 5},
+            //{"StereoIROutput", 3},
+            //{"StereoFlywheelCycleState", 0},          
+            {"LaserSightProperty", 4010061924},
+            {"LaserSightIndex", 0},
+            {"StereoAnaglyphType", 1},
+            {"LeftAnaglyphFilter", 4294901760},
+            {"RightAnaglyphFilter", 4278255615},
+                           
+            // Hotkeys
+            {"CycleFrustumAdjust", 634},
+            {"SaveStereoImage", 1136},
+            {"StereoConvergenceAdjustLess", 628},
+            {"StereoConvergenceAdjustMore", 629},
+            {"StereoSeparationAdjustLess", 626},
+            {"StereoSeparationAdjustMore", 627},
+            {"StereoToggle", 596},
+            {"StereoToggleMode", 1658},
+            {"ToggleLaserSight", 635},
+            {"ToggleMemo", 3629},
+            {"WriteConfig", 630}
+        };
+
+        // Set up all the 3DV params that we care about, that are normally set up by the
+        // 3DV Wizard. We don't want to run the wizard, it's faster to just silently set these.
+        private static void Setup3DVParams()
+        {
+            string nvidiaKeyPath = @"SOFTWARE\NVIDIA Corporation\Global\Stereo3D";
+            RegistryKey nvidiaRoot = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(nvidiaKeyPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
+
+            foreach (var stereoKey in DefaultStereoKeys)
+            {
+                nvidiaRoot.SetValue(stereoKey.Key, stereoKey.Value, RegistryValueKind.DWord);
+            }
+
+            // Tweak a few like 3DVision.bat preferences.
+            nvidiaRoot.SetValue("StereoSeparation", 20, RegistryValueKind.DWord);
+            nvidiaRoot.SetValue("StereoAdvancedHKConfig", 1, RegistryValueKind.DWord);
+            nvidiaRoot.SetValue("LaserSightEnabled", 0, RegistryValueKind.DWord);
+            nvidiaRoot.SetValue("SnapShotQuality", 85, RegistryValueKind.DWord);
+            nvidiaRoot.SetValue("EnableWindowedMode", 5, RegistryValueKind.DWord);
+
+            // Mark the wizard as complete.
+            nvidiaRoot.SetValue("StereoVisionConfirmed", 1, RegistryValueKind.DWord);
+        }
+
+        private static void Enable3D()
+        {
+            string enable3DPath = @"C:\Program Files (x86)\NVIDIA Corporation\3D Vision\nvstlink.exe";
+            Process proc = new Process();
+            proc.StartInfo.FileName = enable3DPath;
+            proc.StartInfo.Arguments = "/enable";
+            proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(enable3DPath);
+            proc.Start();
+            proc.WaitForExit();
+        }
     }
 }
