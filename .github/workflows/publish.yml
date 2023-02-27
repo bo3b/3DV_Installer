@@ -29,7 +29,7 @@ jobs:
         
     # Run dotnet as a publish step so we can make single-file
     - name: dotnet publish
-      run: dotnet publish 3DV_Installer.sln --runtime win10-x64 --self-contained --output bin
+      run: dotnet publish 3DV_Installer.sln --runtime win10-x64 --configuration Release --framework net6.0 --self-contained
 
     # Upload the package: https://github.com/marketplace/actions/upload-a-build-artifact
     # Grab the Tools and NVidia folders as needed components to make a full zip archive.
@@ -38,7 +38,7 @@ jobs:
       with:
         name: 3DV_Installer
         path: |
-          bin/*.exe
-          Nvidia/ 
-          Tools/
+          bin/**/3DV_Install.exe
+          Nvidia/*
+          Tools/*
 
