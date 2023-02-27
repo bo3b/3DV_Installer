@@ -29,7 +29,7 @@ jobs:
         
     # Run dotnet as a publish step so we can make single-file
     - name: dotnet publish
-      run: dotnet build 3DV_Installer.sln
+      run: dotnet publish 3DV_Installer.sln --arch win-x64 --configuration Release --manifest app.manifest --output bin --self-contained -p:PublishTrimmed
 
     # Upload the package: https://github.com/marketplace/actions/upload-a-build-artifact
     # Grab the Tools and NVidia folders as needed components to make a full zip archive.
