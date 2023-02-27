@@ -207,14 +207,17 @@ namespace Install3DV
 
         // Set up all the 3DV params that we care about, that are normally set up by the
         // 3DV Wizard. We don't want to run the wizard, it's faster to just silently set these.
+        //
+        // Not exactly sure why, but we need to use the Registry32, as Registry64 returns null,
+        // even on x64 system.
         private static void Setup3DVParams()
         {
             string nvidiaKeyPath = @"SOFTWARE\NVIDIA Corporation\Global\Stereo3D";
-            RegistryKey nvidiaRoot = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(nvidiaKeyPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
+            RegistryKey nvidiaRoot = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(nvidiaKeyPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
 
             foreach (var stereoKey in DefaultStereoKeys)
             {
-                nvidiaRoot.SetValue(stereoKey.Key, stereoKey.Value, RegistryValueKind.DWord);
+                nvidiaRoot.SetValue(stereoKey.Key, (int)stereoKey.Value, RegistryValueKind.DWord);
             }
 
             // Tweak a few like 3DVision.bat preferences.
@@ -224,8 +227,11 @@ namespace Install3DV
             nvidiaRoot.SetValue("SnapShotQuality", 85, RegistryValueKind.DWord);
             nvidiaRoot.SetValue("EnableWindowedMode", 5, RegistryValueKind.DWord);
 
-            // Mark the wizard as complete.
+            // Mark the medical tests as complete.
             nvidiaRoot.SetValue("StereoVisionConfirmed", 1, RegistryValueKind.DWord);
+
+            // Change from default Discover red/blue 3D.
+            nvidiaRoot.SetValue("StereoViewerType", 1, RegistryValueKind.DWord);
         }
 
         private static void Enable3D()
