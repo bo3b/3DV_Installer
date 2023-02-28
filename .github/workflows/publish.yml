@@ -30,7 +30,7 @@ jobs:
     # Run dotnet as a publish step so we can make single-file
     # publish has some new bug, so we need to use .csproj as target
     - name: Publish
-      run: dotnet publish --output "./publish" --runtime win10-x64 --configuration Release  -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true 3DV_Installer.csproj
+      run: dotnet publish --output "./" --runtime win10-x64 --configuration Release  -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true 3DV_Installer.csproj
 
     # Upload the package: https://github.com/marketplace/actions/upload-a-build-artifact
     # Grab the Tools and NVidia folders as needed components to make a full zip archive.
@@ -39,7 +39,7 @@ jobs:
       with:
         name: 3DV_Installer
         path: |
-          publish/3DV_Installer.exe
+          3DV_Installer.exe
           Nvidia/*
           Tools/*
 
