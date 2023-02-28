@@ -60,8 +60,8 @@ namespace Install3DV
             // If it's a laptop, 3DV can't work on the main screen because
             // of some freaking stupid choice NVidia made. It can work on
             // an external screen though. TODO: hard to check for main screen.
-            if (false)
-                return false;
+            //if (false)
+            //    return false;
 
             // Doesn't run on anything non-NVidia
             if (!IsNVidiaGPU())
@@ -101,7 +101,7 @@ namespace Install3DV
             string sourceFilePath = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia\Resource.dat");
             string destFilePath = @"C:\ProgramData\NVIDIA\Resource.dat";
 
-            string nvidiaDirectory = Path.GetDirectoryName(destFilePath);
+            string nvidiaDirectory = Path.GetDirectoryName(destFilePath)!;
             Directory.CreateDirectory(nvidiaDirectory);
 
             File.Copy(sourceFilePath, destFilePath, true);
@@ -213,7 +213,7 @@ namespace Install3DV
         private static void Setup3DVParams()
         {
             string nvidiaKeyPath = @"SOFTWARE\NVIDIA Corporation\Global\Stereo3D";
-            RegistryKey nvidiaRoot = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(nvidiaKeyPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
+            RegistryKey nvidiaRoot = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(nvidiaKeyPath, RegistryKeyPermissionCheck.ReadWriteSubTree)!;
 
             foreach (var stereoKey in DefaultStereoKeys)
             {
