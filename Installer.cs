@@ -16,7 +16,8 @@ namespace Install3DV
 {
     internal class Installer
     {
-        static string extracted3DFilesPath = Path.Combine(Directory.GetCurrentDirectory(), @"extracted_3DVision");
+        // These are extracted during build process, so no need for 7z here.
+        static string extracted3DFilesPath = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia\3DVisionDriver");
 
         static int Main(string[] args)
         {
@@ -31,10 +32,6 @@ namespace Install3DV
             // Add DCH fix file for 3D Vision installer. This
             // needs to be done before installer is run.
             FixDchDriverFor3dVision();
-
-            // Extract 3D Vision installer files, because we need to tweak
-            // individual files.
-            Extract3DVDriver();
 
             // Patch 3D Vision DLL to match current driver version.
             Patch3DVDriverVersion();
@@ -105,23 +102,6 @@ namespace Install3DV
             Directory.CreateDirectory(nvidiaDirectory);
 
             File.Copy(sourceFilePath, destFilePath, true);
-        }
-
-        // Extract all files from the 3DVision.exe, because we need to patch file versions.
-        private static void Extract3DVDriver()
-        {
-            string sevenZipPath = Path.Combine(Directory.GetCurrentDirectory(), @"Tools\7za.exe");
-            string nvidia3DVExe = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia\3DVision.exe");
-
-            Process proc = new Process();
-            proc.StartInfo.FileName = sevenZipPath;
-            proc.StartInfo.CreateNoWindow = true;
-            proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
-            proc.StartInfo.Arguments = "x " + "\"" + nvidia3DVExe + "\"" + " -o" + "\"" + extracted3DFilesPath + "\"" + " -y";
-
-            proc.Start();
-            proc.WaitForExit();
         }
 
         // Patch the 3D Vision files so that they have a version that matches the
