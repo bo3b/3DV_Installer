@@ -34,7 +34,7 @@ jobs:
 
     # Unzip the NVidia 3D Vision Driver installer, so that it does not need to be at launch.
     - name: Unzip 3DVision.exe
-      run: 7z x .\NVidia\3DVision.Exe "-o.\NVidia\3DVisionDriver" -y
+      run: 7z x .\NVidia\3DVision.Exe "-o.\3DVisionDriver" -y
       
     # Upload the package: https://github.com/marketplace/actions/upload-a-build-artifact
     # Grab the Tools and NVidia folders as needed components to make a full zip archive.
@@ -44,6 +44,7 @@ jobs:
         name: 3DV_Installer
         path: |
           3DV_Installer.exe
-          Nvidia/*
-          Tools/*
+          Nvidia/resource.dat
+          3DVisionDriver/*
+          Tools/rcedit.exe
 
