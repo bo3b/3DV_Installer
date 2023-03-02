@@ -32,19 +32,19 @@ jobs:
     - name: Publish
       run: dotnet publish --output "./" --runtime win10-x64 --configuration Release  -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true 3DV_Installer.csproj
 
-    # Unzip the NVidia 3D Vision Driver installer, so that it does not need to be at launch.
+    # Unzip the NVidia 3D Vision Driver installer, so that it does not need to exist at launch.
     - name: Unzip 3DVision.exe
       run: 7z x .\NVidia\3DVision.Exe "-o.\3DVisionDriver" -y
+      
+    # Use 7z to zip up entire package for better compression.
+    - name: 7z all
+      run: 7z a .\3DV_Installer.7z .\3DVisionDriver\* .\Tools\rcedit.exe .\NVidia\resource.dat .\3DV_installer.exe
       
     # Upload the package: https://github.com/marketplace/actions/upload-a-build-artifact
     # Grab the Tools and NVidia folders as needed components to make a full zip archive.
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: 3DV_Installer
-        path: |
-          3DV_Installer.exe
-          Nvidia/resource.dat
-          3DVisionDriver/*
-          Tools/rcedit.exe
-
+        name: 3DV_Installer.7z
+        path: 3DV_Installer.7z
+          
