@@ -37,14 +37,15 @@ jobs:
       run: 7z x .\NVidia\3DVision.Exe "-o.\3DVisionDriver" -y
       
     # Use 7z to zip up entire package for better compression.
+    # '3DVisionDriver\' will take all items and keep folder name.
+    # 'Extras\' will take both resource.dat and rcedit.exe and keep folder name.
     - name: 7z all
-      run: 7z a .\3DV_Installer.7z .\3DVisionDriver\* .\Tools\rcedit.exe .\NVidia\resource.dat .\3DV_installer.exe
+      run: 7z a .\3DV_Installer.7z 3DVisionDriver\ Extras\ .\3DV_installer.exe
       
     # Upload the package: https://github.com/marketplace/actions/upload-a-build-artifact
     # Grab the Tools and NVidia folders as needed components to make a full zip archive.
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: 3DV_Installer.7z
         path: 3DV_Installer.7z
           
