@@ -17,7 +17,7 @@ namespace Install3DV
     internal class Installer
     {
         // These are extracted during build process, so no need for 7z here.
-        static string extracted3DFilesPath = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia\3DVisionDriver");
+        static string extracted3DFilesPath = Path.Combine(Directory.GetCurrentDirectory(), @"3DVisionDriver");
 
         static int Main(string[] args)
         {
@@ -95,7 +95,7 @@ namespace Install3DV
         // Requires admin privileges.
         public static void FixDchDriverFor3dVision()
         {
-            string sourceFilePath = Path.Combine(Directory.GetCurrentDirectory(), @"NVidia\Resource.dat");
+            string sourceFilePath = Path.Combine(Directory.GetCurrentDirectory(), @"Extras\Resource.dat");
             string destFilePath = @"C:\ProgramData\NVIDIA\Resource.dat";
 
             string nvidiaDirectory = Path.GetDirectoryName(destFilePath)!;
@@ -108,10 +108,10 @@ namespace Install3DV
         // currently installed NVidia video driver. Otherwise installer will fail.
         private static void Patch3DVDriverVersion()
         {
-            string _RcEditExe = Path.Combine(Directory.GetCurrentDirectory(), @"Tools\rcedit.exe");
+            string _RcEditExe = Path.Combine(Directory.GetCurrentDirectory(), @"Extras\rcedit.exe");
             string[] _3DVisionDriverFiles = { "NvSCPAPI.dll", "NvSCPAPI64.dll" };
             string version = NVIDIA.DriverVersion.ToString();
-            string str_version = "7.17.1" + version.Insert(1, ".");    // Bizarre formatting like 7.17.14.2531
+            string str_version = "7.17.1" + version.Insert(1, ".");  // Bizarre formatting like 7.17.14.2531 for 425.31
 
             foreach (string driverFile in _3DVisionDriverFiles)
             {
@@ -143,6 +143,7 @@ namespace Install3DV
             // But also does not run the setup wizard, which we don't want anyway.
 
             Process proc = new Process();
+            proc.StartInfo.CreateNoWindow = true;
             proc.StartInfo.Arguments = "/s";
             proc.StartInfo.FileName = _3dVisionSetupPath;
             proc.Start();
