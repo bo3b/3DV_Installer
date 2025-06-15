@@ -1,0 +1,47 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to create'
+        required: true
+      release_name:
+        description: 'Release name'
+        required: true
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Set up NuGet
+      uses: NuGet/setup-nuget@v1
+
+    - name: Restore NuGet packages
+      run: nuget restore 3DV_Installer.sln
+
+    - name: Build Solution
+      run: msbuild 3DV_Installer.sln /p:Configuration=Release
+
+    - name: Create Zip of Build Output
+      run: |
+        mkdir release
+        copy /Y /B .\3DV_Installer\bin\Release\*.* .\release\
+        powershell Compress-Archive -Path .\release\* -DestinationPath 3DV_Installer.zip
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.event.inputs.tag }}
+        name: ${{ github.event.inputs.release_name }}
+        files: |
+          3DV_Installer.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
