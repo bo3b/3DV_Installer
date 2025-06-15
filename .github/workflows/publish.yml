@@ -17,10 +17,15 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
+    - name: Install 7-Zip
+      shell: cmd
+      run: |
+        choco install 7zip -y
+          
     # Install the .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v3
@@ -45,7 +50,7 @@ jobs:
     # Upload the package: https://github.com/marketplace/actions/upload-a-build-artifact
     # Grab the Tools and NVidia folders as needed components to make a full zip archive.
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: 3DV_Installer.7z
           
