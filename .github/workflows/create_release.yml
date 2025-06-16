@@ -10,6 +10,11 @@ on:
         description: 'Release name'
         required: true
 
+# Permissions are required to create a Release.
+permissions:
+  contents: write
+  actions: read
+  
 jobs:
   build-and-release:
     runs-on: windows-latest
