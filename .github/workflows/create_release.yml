@@ -23,11 +23,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v6
 
-    - name: Install 7-Zip
-      shell: cmd
-      run: |
-        choco install 7zip -y
-        
     # Install the .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v5
