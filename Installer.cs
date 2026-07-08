@@ -84,7 +84,9 @@ namespace Install3DV
                 }
             }
 
+            Log("");
             Log("Installation complete — 3D Vision is enabled.");
+            Log("");
             PlaySuccessSound();
             Thread.Sleep(3000);
             return 0;
@@ -94,7 +96,7 @@ namespace Install3DV
         private static void PlaySuccessSound()
         {
             //Console.Beep(523, 50);
-            Console.Beep(784, 150);
+            Console.Beep(684, 150);
         }
 
         // ------------------------------------------------------------------------------------------------
@@ -154,6 +156,13 @@ namespace Install3DV
         // store and installs it immediately if the emitter happens to be plugged in
         // already; if not, Windows picks it up automatically the next time it's
         // plugged in, so a non-zero exit here isn't fatal.
+        const int ERROR_SUCCESS = 0;
+        const int ERROR_SUCCESS_REBOOT_REQUIRED = 3010;
+
+        // Set when pnputil reports it needs a reboot to finish binding the driver,
+        // so Main() can call that out in the final summary.
+        private static bool rebootRequired = false;
+
         private static void InstallUsbEmitterDriver()
         {
             string infPath = Path.Combine(extracted3DFilesPath, "NV3DVisionUSB.Driver", "nvstusb.inf");
@@ -168,7 +177,12 @@ namespace Install3DV
             proc.Start();
             proc.WaitForExit();
 
-            if (proc.ExitCode != 0)
+            if (proc.ExitCode == ERROR_SUCCESS_REBOOT_REQUIRED)
+            {
+                Log("Emitter driver installed; a reboot is needed before it's fully active.");
+                rebootRequired = true;
+            }
+            else if (proc.ExitCode != ERROR_SUCCESS)
                 Log("pnputil exited with code {0}; driver is still staged for when the emitter is plugged in.", proc.ExitCode);
         }
 
