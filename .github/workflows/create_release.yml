@@ -17,11 +17,11 @@ permissions:
   
 jobs:
   build-and-release:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install 7-Zip
       shell: cmd
@@ -30,7 +30,7 @@ jobs:
         
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 6.0.x
         
@@ -50,7 +50,7 @@ jobs:
       run: 7z a .\3DV_Installer.7z 3DVisionDriver\ Extras\ .\3DV_installer.exe
       
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         tag_name: ${{ github.event.inputs.tag }}
         name: ${{ github.event.inputs.release_name }}
