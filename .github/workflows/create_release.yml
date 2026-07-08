@@ -25,10 +25,21 @@ jobs:
 
     # Install the .NET Core workload
     - name: Install .NET Core
+      id: dotnet-setup
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.x
-        
+
+    # windows-2022 runners ship a newer SDK preinstalled alongside whatever
+    # setup-dotnet just added, and dotnet picks the highest installed SDK by
+    # default - which fails to find Main for this project shape. Pin to the
+    # EXACT version setup-dotnet just installed, with rollForward disabled,
+    # so there is no "pick whatever's newest" ambiguity at all. CI-only, not
+    # committed, so local dev isn't forced onto a specific SDK version.
+    - name: Pin .NET SDK for this build
+      run: |
+        '{"sdk":{"version":"${{ steps.dotnet-setup.outputs.dotnet-version }}","rollForward":"disable"}}' | Set-Content -Path global.json
+
     # Run dotnet as a publish step so we can make single-file.
     # publish has some new bug, so we need to use .csproj as target
     - name: Publish

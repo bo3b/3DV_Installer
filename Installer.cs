@@ -159,10 +159,6 @@ namespace Install3DV
         const int ERROR_SUCCESS = 0;
         const int ERROR_SUCCESS_REBOOT_REQUIRED = 3010;
 
-        // Set when pnputil reports it needs a reboot to finish binding the driver,
-        // so Main() can call that out in the final summary.
-        private static bool rebootRequired = false;
-
         private static void InstallUsbEmitterDriver()
         {
             string infPath = Path.Combine(extracted3DFilesPath, "NV3DVisionUSB.Driver", "nvstusb.inf");
@@ -178,10 +174,7 @@ namespace Install3DV
             proc.WaitForExit();
 
             if (proc.ExitCode == ERROR_SUCCESS_REBOOT_REQUIRED)
-            {
                 Log("Emitter driver installed; a reboot is needed before it's fully active.");
-                rebootRequired = true;
-            }
             else if (proc.ExitCode != ERROR_SUCCESS)
                 Log("pnputil exited with code {0}; driver is still staged for when the emitter is plugged in.", proc.ExitCode);
         }
