@@ -10,6 +10,10 @@ using System;
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Security.AccessControl;
+using System.Security.Principal;
+using System.Text.RegularExpressions;
 using NvAPIWrapper;
 
 namespace Install3DV
@@ -38,6 +42,10 @@ namespace Install3DV
 
             // Install the driver without UI.
             Run3DVInstaller();
+
+            // Install the stereo pipe server as a display container plugin,
+            // to fix the multi-second stalls in the NVidia Control Panel.
+            FixControlPanelStalls();
 
             // Reset or change the 3DV control keys.
             Setup3DVParams();
@@ -150,6 +158,123 @@ namespace Install3DV
 
             proc.WaitForExit();
         }
+
+        // ------------------------------------------------------------------------------------------------
+
+        // The NVidia Control Panel talks to a stereo server over the named pipe
+        // \\.\pipe\stereosvrpipe. That server (nvstapisvr64.dll) runs as a plugin
+        // inside the "NVIDIA Display Container LS" service. Drivers after 452.06
+        // dropped 3D Vision, so the 3DV setup no longer manages to deploy the
+        // plugin (the PluginFolderPath registry breadcrumb it needs is gone), and
+        // every stereo call in the control panel stalls for seconds waiting on a
+        // pipe that nobody serves.
+        //
+        // We deploy the plugin ourselves: find the container's plugin folder from
+        // its service command line, and copy the server DLLs in with the
+        // underscore prefix that marks them as optional plugins. The container
+        // watches that folder and starts the pipe server within a second or two,
+        // no reboot needed.
+        //
+        // The plugin folder lives in the DriverStore and is owned by SYSTEM with
+        // no write access for Administrators, so we have to take ownership, add
+        // ourselves, copy, then put the ACL back the way we found it.
+        private static void FixControlPanelStalls()
+        {
+            string? imagePath = (string?)Registry.LocalMachine
+                .OpenSubKey(@"SYSTEM\CurrentControlSet\Services\NVDisplay.ContainerLocalSystem")?
+                .GetValue("ImagePath");
+            if (imagePath == null)
+            {
+                Debug.WriteLine("No NVDisplay.ContainerLocalSystem service, cannot fix stalls.");
+                return;
+            }
+
+            // Plugin folder is the -d argument, quoted or bare depending on driver.
+            Match match = Regex.Match(imagePath, @"-d\s+(?:""(?<dir>[^""]+)""|(?<dir>\S+))");
+            if (!match.Success || !Directory.Exists(match.Groups["dir"].Value))
+            {
+                Debug.WriteLine("No container plugin folder found in: {0}", imagePath);
+                return;
+            }
+            string pluginDir = match.Groups["dir"].Value;
+
+            Debug.WriteLine("Installing stereo pipe server into: {0}", pluginDir);
+
+            EnablePrivilege("SeTakeOwnershipPrivilege");
+            EnablePrivilege("SeRestorePrivilege");
+
+            DirectoryInfo dir = new DirectoryInfo(pluginDir);
+            SecurityIdentifier admins = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null);
+            SecurityIdentifier system = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
+
+            // Inheritable, so the copied DLLs pick it up too and a re-run can overwrite them.
+            FileSystemAccessRule adminsFullControl = new FileSystemAccessRule(admins, FileSystemRights.FullControl,
+                InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow);
+
+            DirectorySecurity acl = dir.GetAccessControl();
+            acl.SetOwner(admins);
+            acl.AddAccessRule(adminsFullControl);
+            dir.SetAccessControl(acl);
+
+            try
+            {
+                // 32-bit DLL only loads on a 32-bit OS, but deploy both like NVidia does.
+                File.Copy(Path.Combine(extracted3DFilesPath, "nvstapisvr.dll"), Path.Combine(pluginDir, "_nvstapisvr.dll"), true);
+                File.Copy(Path.Combine(extracted3DFilesPath, "nvstapisvr64.dll"), Path.Combine(pluginDir, "_nvstapisvr64.dll"), true);
+            }
+            finally
+            {
+                acl = dir.GetAccessControl();
+                acl.RemoveAccessRule(adminsFullControl);
+                acl.SetOwner(system);
+                dir.SetAccessControl(acl);
+            }
+
+            // The container notices the new plugin on its own; just confirm.
+            for (int i = 0; i < 20; i++)
+            {
+                if (File.Exists(@"\\.\pipe\stereosvrpipe"))
+                {
+                    Debug.WriteLine("Stereo pipe server is up.");
+                    return;
+                }
+                Thread.Sleep(500);
+            }
+            Debug.WriteLine("Stereo pipe server did not start; control panel stalls will remain until reboot.");
+        }
+
+        // Elevated processes hold these privileges but disabled; ownership
+        // changes need them switched on for this process.
+        private static void EnablePrivilege(string privilege)
+        {
+            LUID luid = new LUID();
+            LookupPrivilegeValue(null, privilege, ref luid);
+
+            TOKEN_PRIVILEGES tp = new TOKEN_PRIVILEGES { PrivilegeCount = 1, Luid = luid, Attributes = SE_PRIVILEGE_ENABLED };
+            OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, out IntPtr token);
+            AdjustTokenPrivileges(token, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        const uint SE_PRIVILEGE_ENABLED = 0x00000002;
+        const uint TOKEN_ADJUST_PRIVILEGES = 0x00000020;
+        const uint TOKEN_QUERY = 0x00000008;
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct LUID { public uint LowPart; public int HighPart; }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct TOKEN_PRIVILEGES { public uint PrivilegeCount; public LUID Luid; public uint Attributes; }
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        static extern bool OpenProcessToken(IntPtr processHandle, uint desiredAccess, out IntPtr tokenHandle);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        static extern bool LookupPrivilegeValue(string? systemName, string name, ref LUID luid);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        static extern bool AdjustTokenPrivileges(IntPtr tokenHandle, bool disableAllPrivileges, ref TOKEN_PRIVILEGES newState, uint bufferLength, IntPtr previousState, IntPtr returnLength);
+
+        // ------------------------------------------------------------------------------------------------
 
         // Set up dictionary with a.. stereo3DKeyNames and their default values
         // as they would be after wizard finishes.
