@@ -87,16 +87,8 @@ namespace Install3DV
             Log("");
             Log("Installation complete — 3D Vision is enabled.");
             Log("");
-            PlaySuccessSound();
             Thread.Sleep(3000);
             return 0;
-        }
-
-        // Two simple beeps to signal a successful install.
-        private static void PlaySuccessSound()
-        {
-            //Console.Beep(523, 50);
-            Console.Beep(684, 150);
         }
 
         // ------------------------------------------------------------------------------------------------
