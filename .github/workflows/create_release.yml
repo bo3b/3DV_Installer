@@ -37,7 +37,12 @@ jobs:
     # Unzip the NVidia 3D Vision Driver installer, so that it does not need to exist at launch.
     - name: Unzip 3DVision.exe
       run: 7z x .\NVidia\3DVision.Exe "-o.\3DVisionDriver" -y
-      
+
+    # Bundle the USB emitter driver alongside the 3D Vision driver, so it's
+    # available to the installer at the same relative path at launch.
+    - name: Copy USB emitter driver
+      run: Copy-Item -Recurse -Force .\NVidia\NV3DVisionUSB.Driver .\3DVisionDriver\
+
     # Use 7z to zip up entire package for better compression.
     # '3DVisionDriver\' will take all items and keep folder name.
     # 'Extras\' will take both resource.dat and rcedit.exe and keep folder name.

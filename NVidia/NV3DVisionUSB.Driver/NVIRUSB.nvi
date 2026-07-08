@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nvi name="Display.NVIRUSB" title="${{title}}" version="${{version}}" versionText="${{version}}" timestamp="2017-11-28T13:35:20" disposition="default" installerMin="2.1001.27.149" hasDriver="true">
+	<strings>
+		<string name="version" value="390.41"/>
+		<string name="stereoInterfaceVersion" value="265"/>
+		<string name="NVIRUSBInfName" value="nvstusb.inf"/>
+	</strings>
+	<strings>
+		<localized locale="0x0401">
+			<string name="title" value="برنامج تشغيل مراقب ‎3D Vision"/>
+			<string name="InstallBlockedMessage" value="لا يمكن تثبيت ${{title}} على هذا الكمبيوتر."/>
+			<string name="incompatibleComponents" value="المكونات الموجودة في أداة التثبيت هذه غير متوافقة كل منها مع الآخر. قم بتثبيت أحدث برنامج تشغيل."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0404">
+			<string name="title" value="3D Vision 控制器驅動程式"/>
+			<string name="InstallBlockedMessage" value="${{title}} 無法安裝在此電腦上。"/>
+			<string name="incompatibleComponents" value="這個安裝程式的套裝元件彼此不相容。安裝的最新驅動程式。"/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0405">
+			<string name="title" value="Ovladač řídící jednotky 3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} nemůže být nainstalován na tento počítač."/>
+			<string name="incompatibleComponents" value="Komponenty obsažené v této instalační aplikace nejsou vzájemně kompatibilní. Nainstalujte nejnovější ovladač."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0406">
+			<string name="title" value="3D Vision Controllerdriver"/>
+			<string name="InstallBlockedMessage" value="${{title}} kan ikke installeres på denne computer."/>
+			<string name="incompatibleComponents" value="De komponenter, som er pakket i dette installationsprogram, er ikke kompatible med hinanden. Installer den nyeste driver."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0407">
+			<string name="title" value="3D Vision Controller-Treiber"/>
+			<string name="InstallBlockedMessage" value="${{title}} kann auf diesem Computer nicht installiert werden."/>
+			<string name="incompatibleComponents" value="Die in diesem Installationsprogramm enthaltenen Komponenten sind nicht miteinander kompatibel. Installieren Sie den neuesten Treiber."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0408">
+			<string name="title" value="Πρόγραμμα οδήγησης ελεγκτή 3D Vision"/>
+			<string name="InstallBlockedMessage" value="Το ${{title}} δεν είναι δυνατό να εγκατασταθεί σε αυτόν τον υπολογιστή."/>
+			<string name="incompatibleComponents" value="Τα συστατικά μέρη που συσκευάζονται σε αυτό το πρόγραμμα εγκατάστασης δεν είναι συμβατά μεταξύ τους. Εγκαταστήστε το πιο πρόσφατο πρόγραμμα οδήγησης."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0409">
+			<string name="title" value="3D Vision Controller Driver"/>
+			<string name="InstallBlockedMessage" value="${{title}} cannot be installed on this computer."/>
+			<string name="incompatibleComponents" value="The components packaged in this installer are incompatible with each other. Install the latest driver."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x040a">
+			<string name="title" value="Controlador de 3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} no puede instalarse en este equipo."/>
+			<string name="incompatibleComponents" value="Los componentes empaquetados en este instalador son incompatibles entre sí. Instalar el controlador más reciente."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x040b">
+			<string name="title" value="3D Vision -ohjain"/>
+			<string name="InstallBlockedMessage" value="Sovellusta ${{title}} ei voi asentaa tähän tietokoneeseen."/>
+			<string name="incompatibleComponents" value="Tämän asennusohjelman mukana toimitetut komponentit eivät ole yhteensopivia keskenään. Asenna viimeisin ohjain."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x040c">
+			<string name="title" value="Pilote du contrôleur 3D Vision"/>
+			<string name="InstallBlockedMessage" value="Impossible d’installer ${{title}} sur cet ordinateur."/>
+			<string name="incompatibleComponents" value="Les composants compris dans ce programme d'installation sont incompatibles entre eux. Installer le pilote le plus récent"/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x040d">
+			<string name="title" value="מנהל ההתקן של בקר ‎3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} לא ניתן להתקנה במחשב זה."/>
+			<string name="incompatibleComponents" value="אין תאימות בין הרכיבים הכלולים בתכנת התקנה זו. התקן את מנהל ההתקן העדכני ביותר."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x040e">
+			<string name="title" value="3D Vision vezérlő illesztőprogram"/>
+			<string name="InstallBlockedMessage" value="A(z) ${{title}} nem telepíthető erre a számítógépre."/>
+			<string name="incompatibleComponents" value="A telepítőprogramba csomagolt összetevők nem kompatibilisek egymással. Telepítse a legújabb illesztőprogramot."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0410">
+			<string name="title" value="Driver del controller 3D Vision"/>
+			<string name="InstallBlockedMessage" value="Impossibile installare ${{title}} su questo computer."/>
+			<string name="incompatibleComponents" value="I componenti inclusi in questo programma di installazione sono incompatibili tra loro. Installare l’ultima versione del driver."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0411">
+			<string name="title" value="3D Vision コントローラー ドライバー"/>
+			<string name="InstallBlockedMessage" value="${{title}} はこのコンピューターにインストールできません。"/>
+			<string name="incompatibleComponents" value="このインストーラーに含まれているコンポーネントには相互運用性がありません。最新のドライバーをインストールしてください。"/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0412">
+			<string name="title" value="3D Vision 컨트롤러 드라이버"/>
+			<string name="InstallBlockedMessage" value="${{title}}은(는) 이 컴퓨터에 설치할 수 없습니다."/>
+			<string name="incompatibleComponents" value="이 설치 관리자에 포함된 구성 요소들은 서로 호환됩니다. 최신 드라이버를 설치하십시오."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0413">
+			<string name="title" value="3D Vision controllerstuurprogramma"/>
+			<string name="InstallBlockedMessage" value="${{title}} kan niet op deze computer worden geïnstalleerd."/>
+			<string name="incompatibleComponents" value="De in dit installatieprogramma verpakte componenten zijn niet compatibel met elkaar. Installeer het laatste stuurprogramma."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0414">
+			<string name="title" value="Driver til 3D Vision-kontroller"/>
+			<string name="InstallBlockedMessage" value="${{title}} kan ikke installeres på denne datamaskinen."/>
+			<string name="incompatibleComponents" value="Komponentene som er pakket i dette installasjonsprogrammet, er ikke kompatible med hverandre. Installer den nyeste driveren."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0415">
+			<string name="title" value="Sterownik kontrolera 3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} nie może zostać zainstalowany na tym komputerze."/>
+			<string name="incompatibleComponents" value="Składniki oferowane w tym programie instalacyjnym nie są ze sobą zgodne. Zainstaluj najnowszy sterownik."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0416">
+			<string name="title" value="Driver de controle do 3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} não pode ser instalado neste computador."/>
+			<string name="incompatibleComponents" value="Os componentes incluídos neste instalador não são compatíveis entre si. Instale o driver mais recente."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0419">
+			<string name="title" value="Драйвер контроллера 3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} невозможно установить на этом компьютере."/>
+			<string name="incompatibleComponents" value="Компоненты этого установщика несовместимы друг с другом. Установите последнюю версию драйвера."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x041b">
+			<string name="title" value="3D Vision radič ovládača"/>
+			<string name="InstallBlockedMessage" value="${{title}} nie je možné na tomto počítači nainštalovať."/>
+			<string name="incompatibleComponents" value="Komponenty v tomto inštalátore nie sú navzájom kompatibilné. Inštalovať najnovší ovládač."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x041d">
+			<string name="title" value="3D Vision drivrutin för styrenhet"/>
+			<string name="InstallBlockedMessage" value="${{title}} kan inte installeras på denna dator."/>
+			<string name="incompatibleComponents" value="Komponenterna som är inpackade i denna installerare är inte kompatibla med varandra. Installera den senaste drivrutinen."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x041e">
+			<string name="title" value="โปรแกรมควบคุมของตัวควบคุม 3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} ไม่สามารถติดตั้งได้ในคอมพิวเตอร์เครื่องนี้"/>
+			<string name="incompatibleComponents" value="คอมโพเนนต์ต่างๆ ที่มีอยู่ในโปรแกรมติดตั้งนี้ไม่สามารถเข้ากันได้ ให้ติดตั้งโปรแกรมควบคุมรุ่นล่าสุด"/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x041f">
+			<string name="title" value="3D Vision Denetleyici Sürücüsü"/>
+			<string name="InstallBlockedMessage" value="${{title}}, bu bilgisayara kurulamaz."/>
+			<string name="incompatibleComponents" value="Bu kurulum programının içerdiği bileşenler birbiriyle uyumlu değil. En son sürücü sürümünü kurun."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0424">
+			<string name="title" value="3D Vision gonilnik za krmilnik"/>
+			<string name="InstallBlockedMessage" value="${{title}} ni mogoče namestiti na tem računalniku."/>
+			<string name="incompatibleComponents" value="Komponente v tem namestitvenem programu niso medsebojno združljive. Namestite najnovejši gonilnik."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0804">
+			<string name="title" value="3D Vision 控制器驱动程序"/>
+			<string name="InstallBlockedMessage" value="${{title}} 无法安装到此计算机。"/>
+			<string name="incompatibleComponents" value="封装在此安装程序中的组件彼此不兼容。安装最新驱动程序。"/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0809">
+			<string name="title" value="3D Vision Controller Driver"/>
+			<string name="InstallBlockedMessage" value="${{title}} cannot be installed on this computer."/>
+			<string name="incompatibleComponents" value="The components packaged in this installer are incompatible with each other. Install the latest driver."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x080a">
+			<string name="title" value="Controlador de la controladora 3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} no puede instalarse en este equipo."/>
+			<string name="incompatibleComponents" value="Los componentes empaquetados en este instalador no son compatibles entre sí. Instalar el controlador más reciente."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+		<localized locale="0x0816">
+			<string name="title" value="Controlador 3D Vision"/>
+			<string name="InstallBlockedMessage" value="${{title}} não pode ser instalado neste computador."/>
+			<string name="incompatibleComponents" value="Os componentes fornecidos com este instalador são incompatíveis entre si. Instale o controlador mais recente."/>
+			<string name="arpDisplayName" value="NVIDIA ${{title}} ${{version}}"/>
+		</localized>
+	</strings>
+	<interfaces>
+		<interface name="stereoInterface" version="${{stereoInterfaceVersion}}"/>
+	</interfaces>
+	<dependencies>
+		<package type="after" package="Display.Driver"/>
+		<package type="after" package="Display.ControlPanel"/>
+		<package type="requires" package="Display.Driver"/>
+	</dependencies>
+	<description/>
+	<constraints>
+		<custom name="3DVisionControllerSupportCheck" level="silent" text="${{InstallBlockedMessage}}"/>
+		<interface name="Display.Driver!stereoInterface" package="Display.Driver" interfaceName="stereoInterface" max="${{stereoInterfaceVersion}}" text="${{incompatibleComponents}}" optional="true" level="error"/>
+	</constraints>
+	<extensions>
+		<extension file="NVIRUSBExt.DLL"/>
+	</extensions>
+	<properties>
+		<bool name="FixedInstallLocation" value="true"/>
+		<string name="ArpDisplayName" value="${{arpDisplayName}}"/>
+		<bool name="DependencyRemoved" value="false"/>
+	</properties>
+    <manifest>
+        <file name="nvir3dgenco32.dll" />
+        <file name="nvir3dgenco64.dll" />
+        <file name="NVIRUSB.nvi" />
+        <file name="NVIRUSBExt.dll" />
+        <file name="nvstusb.cat" />
+        <file name="nvstusb.inf" />
+        <file name="nvstusb32.sys" />
+        <file name="nvstusb64.sys" />
+    </manifest>
+	<phases>
+		<device phase="removePhantomNVIRUSBDevices" action="removePhantoms" when="install">
+			<inf name="${{NVIRUSBInfName}}"/>
+		</device>
+		<device phase="installIR3DDriver" fixedProgress="10" deviceProgress="75" autoTick="200">
+			<inf name="${{NVIRUSBInfName}}"/>
+		</device>
+		<custom phase="hideOldARPEntry" action="hideOldARPEntry" when="install"/>
+		<custom phase="removePendingRunOnce" action="RemovePendingRunOnce" onError="ignore" when="uninstall"/>
+	</phases>
+</nvi>

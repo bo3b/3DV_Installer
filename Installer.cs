@@ -60,7 +60,8 @@ namespace Install3DV
                 return Fail("This system does not support 3D Vision (no NVIDIA GPU detected, or driver version not supported). Nothing was installed.");
 
             (string Description, Action Step)[] steps =
-            { // Maybe emitter driver?
+            {
+                ("Installing USB emitter driver", InstallUsbEmitterDriver),
                 ("Applying DCH fix for 3D Vision installer", FixDchDriverFor3dVision),
                 ("Patching 3D Vision driver version", Patch3DVDriverVersion),
                 ("Installing 3D Vision driver", Run3DVInstaller),
@@ -103,7 +104,8 @@ namespace Install3DV
         private static bool Is3DVisionDriverAvailable()
         {
             return Directory.Exists(extracted3DFilesPath) &&
-                File.Exists(Path.Combine(extracted3DFilesPath, "setup.exe"));
+                File.Exists(Path.Combine(extracted3DFilesPath, "setup.exe")) &&
+                File.Exists(Path.Combine(extracted3DFilesPath, "NV3DVisionUSB.Driver", "nvstusb.inf"));
         }
 
         // We want double check that the current system is capable of
@@ -146,6 +148,29 @@ namespace Install3DV
         }
 
         // ------------------------------------------------------------------------------------------------
+
+        // The IR emitter is a separate USB device from the GPU, with its own kernel
+        // driver (NV3DVisionUSB.Driver\nvstusb.inf). pnputil stages it into the driver
+        // store and installs it immediately if the emitter happens to be plugged in
+        // already; if not, Windows picks it up automatically the next time it's
+        // plugged in, so a non-zero exit here isn't fatal.
+        private static void InstallUsbEmitterDriver()
+        {
+            string infPath = Path.Combine(extracted3DFilesPath, "NV3DVisionUSB.Driver", "nvstusb.inf");
+
+            Log("Installing driver: {0}", infPath);
+
+            Process proc = new Process();
+            proc.StartInfo.FileName = Path.Combine(Environment.SystemDirectory, "pnputil.exe");
+            proc.StartInfo.Arguments = $"/add-driver \"{infPath}\" /install";
+            proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.UseShellExecute = false;
+            proc.Start();
+            proc.WaitForExit();
+
+            if (proc.ExitCode != 0)
+                Log("pnputil exited with code {0}; driver is still staged for when the emitter is plugged in.", proc.ExitCode);
+        }
 
         // Fix a DCH driver so that 3DV can work. Without this Resource.dat file the
         // installer fails, and the file is no longer included in DCH builds. 
