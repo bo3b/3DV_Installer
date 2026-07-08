@@ -30,7 +30,7 @@ jobs:
     # Run dotnet as a publish step so we can make single-file
     # publish has some new bug, so we need to use .csproj as target
     - name: Publish
-      run: dotnet publish --output "./" --runtime win10-x64 --configuration Release  -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true 3DV_Installer.csproj
+      run: dotnet publish --output "./" --runtime win-x64 --configuration Release  -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true 3DV_Installer.csproj
 
     # Unzip the NVidia 3D Vision Driver installer, so that it does not need to exist at launch.
     - name: Unzip 3DVision.exe
