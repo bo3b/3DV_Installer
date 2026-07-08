@@ -23,40 +23,88 @@ namespace Install3DV
         // These are extracted during build process, so no need for 7z here.
         static string extracted3DFilesPath = Path.Combine(Directory.GetCurrentDirectory(), @"3DVisionDriver");
 
+        // Always prints, unlike Debug.WriteLine which is compiled out in Release.
+        private static void Log(string format, params object?[] args)
+        {
+            string message = args.Length > 0 ? string.Format(format, args) : format;
+            Console.WriteLine($"{message}");
+        }
+
+        // Only pause on failure, so the user can read what went wrong before the
+        // window closes. Success exits immediately with a Ta-Da sound instead.
+        private static int Fail(string message)
+        {
+            Log("-------Failure----------");
+            Log(message);
+            Log("------------------------");
+            Log("");
+            Console.Write("Press Enter to close this window...");
+            Console.ReadLine();
+            return -1;
+        }
+
         static int Main(string[] args)
         {
+            Console.WriteLine("=========================");
+            Console.WriteLine("   3D Vision Installer   ");
+            Console.WriteLine("=========================");
+            Console.WriteLine();
+            Console.WriteLine("Install 3D Vision Driver on any driver after 425.31.");
+            Console.WriteLine("Works on DCH drivers, and fixes Control Panel stalls.");
+            Console.WriteLine();
+
+            if (!Is3DVisionDriverAvailable())
+                return Fail($"3D Vision Driver files not found at: {extracted3DFilesPath}\nMake sure the 3DVisionDriver folder is present next to this installer.");
+
             if (!SanityCheck3DV())
+                return Fail("This system does not support 3D Vision (no NVIDIA GPU detected, or driver version not supported). Nothing was installed.");
+
+            (string Description, Action Step)[] steps =
+            { // Maybe emitter driver?
+                ("Applying DCH fix for 3D Vision installer", FixDchDriverFor3dVision),
+                ("Patching 3D Vision driver version", Patch3DVDriverVersion),
+                ("Installing 3D Vision driver", Run3DVInstaller),
+                ("Fixing NVidia Control Panel stalls", FixControlPanelStalls),
+                ("Setting up 3D Vision parameters", Setup3DVParams),
+                ("Enabling 3D", Enable3D),
+            };
+
+            for (int i = 0; i < steps.Length; i++)
             {
-                Debug.WriteLine("Not an NVidia system.\n Driver cannot be installed.\n");
-                return -1;
+                Log("");
+                Log("[{0}/{1}] {2}...", i + 1, steps.Length, steps[i].Description);
+                try
+                {
+                    steps[i].Step();
+                }
+                catch (Exception ex)
+                {
+                    return Fail($"Installation FAILED at step {i + 1}/{steps.Length}: {steps[i].Description}\n{ex}");
+                }
             }
 
-            // Install 3D Vision Controller Driver for pyramid.
-
-            // Add DCH fix file for 3D Vision installer. This
-            // needs to be done before installer is run.
-            FixDchDriverFor3dVision();
-
-            // Patch 3D Vision DLL to match current driver version.
-            Patch3DVDriverVersion();
-
-            // Install the driver without UI.
-            Run3DVInstaller();
-
-            // Install the stereo pipe server as a display container plugin,
-            // to fix the multi-second stalls in the NVidia Control Panel.
-            FixControlPanelStalls();
-
-            // Reset or change the 3DV control keys.
-            Setup3DVParams();
-
-            // Toggle 3D On.
-            Enable3D();
-
+            Log("Installation complete — 3D Vision is enabled.");
+            PlaySuccessSound();
+            Thread.Sleep(3000);
             return 0;
         }
 
+        // Two simple beeps to signal a successful install.
+        private static void PlaySuccessSound()
+        {
+            //Console.Beep(523, 50);
+            Console.Beep(784, 150);
+        }
+
         // ------------------------------------------------------------------------------------------------
+
+        // The 3DVisionDriver folder is extracted next to this exe during the build/publish
+        // step; if it's missing, every later step would fail anyway, so check up front.
+        private static bool Is3DVisionDriverAvailable()
+        {
+            return Directory.Exists(extracted3DFilesPath) &&
+                File.Exists(Path.Combine(extracted3DFilesPath, "setup.exe"));
+        }
 
         // We want double check that the current system is capable of
         // doing 3DV. No point in installing if it won't work.
@@ -91,7 +139,8 @@ namespace Install3DV
                 return false;
             }
 
-            Debug.WriteLine("Ver: {0}", NVIDIA.DriverVersion);
+            float ver = (NVIDIA.DriverVersion / 100f);
+            Log("NVidia Driver Version: {0}", ver);
 
             return true;
         }
@@ -123,7 +172,7 @@ namespace Install3DV
 
             foreach (string driverFile in _3DVisionDriverFiles)
             {
-                Debug.WriteLine("Patch {0} version into: {1}", version, driverFile);
+                Log("Patch {0} version into: {1}", version, driverFile);
 
                 string filePath = Path.Combine(extracted3DFilesPath, driverFile);
 
@@ -144,10 +193,10 @@ namespace Install3DV
         {
             string _3dVisionSetupPath = Path.Combine(extracted3DFilesPath, @"setup.exe");
 
-            Debug.WriteLine("Starting 3D Vision setup: {0}", _3dVisionSetupPath);
+            Log("Starting 3D Vision setup: {0}", _3dVisionSetupPath);
 
             // Since this is an InstallShield app, we can pass the "/s" flag for a silent install.
-            // This is what the full driver install does.  That leaves 3D installed, but disabled. 
+            // This is what the full driver install does.  That leaves 3D installed, but disabled.
             // But also does not run the setup wizard, which we don't want anyway.
 
             Process proc = new Process();
@@ -156,6 +205,7 @@ namespace Install3DV
             proc.StartInfo.FileName = _3dVisionSetupPath;
             proc.Start();
 
+            Log("This can take up to a minute; please wait...");
             proc.WaitForExit();
         }
 
@@ -180,12 +230,21 @@ namespace Install3DV
         // ourselves, copy, then put the ACL back the way we found it.
         private static void FixControlPanelStalls()
         {
+            // Already deployed and running (e.g. a re-run of this installer) - the
+            // plugin DLL is locked by the container while loaded, so copying over
+            // it again would throw. Nothing to fix if the pipe is already up.
+            if (File.Exists(@"\\.\pipe\stereosvrpipe"))
+            {
+                Log("Stereo pipe server is already running; nothing to do.");
+                return;
+            }
+
             string? imagePath = (string?)Registry.LocalMachine
                 .OpenSubKey(@"SYSTEM\CurrentControlSet\Services\NVDisplay.ContainerLocalSystem")?
                 .GetValue("ImagePath");
             if (imagePath == null)
             {
-                Debug.WriteLine("No NVDisplay.ContainerLocalSystem service, cannot fix stalls.");
+                Log("No NVDisplay.ContainerLocalSystem service, cannot fix stalls.");
                 return;
             }
 
@@ -193,12 +252,12 @@ namespace Install3DV
             Match match = Regex.Match(imagePath, @"-d\s+(?:""(?<dir>[^""]+)""|(?<dir>\S+))");
             if (!match.Success || !Directory.Exists(match.Groups["dir"].Value))
             {
-                Debug.WriteLine("No container plugin folder found in: {0}", imagePath);
+                Log("No container plugin folder found in: {0}", imagePath);
                 return;
             }
             string pluginDir = match.Groups["dir"].Value;
 
-            Debug.WriteLine("Installing stereo pipe server into: {0}", pluginDir);
+            Log("Installing stereo pipe server into: {0}", pluginDir);
 
             EnablePrivilege("SeTakeOwnershipPrivilege");
             EnablePrivilege("SeRestorePrivilege");
@@ -235,12 +294,15 @@ namespace Install3DV
             {
                 if (File.Exists(@"\\.\pipe\stereosvrpipe"))
                 {
-                    Debug.WriteLine("Stereo pipe server is up.");
+                    Console.WriteLine();
+                    Log("Stereo pipe server is up.");
                     return;
                 }
+                Console.Write(".");
                 Thread.Sleep(500);
             }
-            Debug.WriteLine("Stereo pipe server did not start; control panel stalls will remain until reboot.");
+            Console.WriteLine();
+            Log("Stereo pipe server did not start; control panel stalls will remain until reboot.");
         }
 
         // Elevated processes hold these privileges but disabled; ownership
