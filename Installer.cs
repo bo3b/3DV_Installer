@@ -62,10 +62,10 @@ namespace Install3DV
             (string Description, Action Step)[] steps =
             {
                 ("Installing USB emitter driver", InstallUsbEmitterDriver),
+                ("Fixing NVidia Control Panel stalls", FixControlPanelStalls),
                 ("Applying DCH fix for 3D Vision installer", FixDchDriverFor3dVision),
                 ("Patching 3D Vision driver version", Patch3DVDriverVersion),
                 ("Installing 3D Vision driver", Run3DVInstaller),
-                ("Fixing NVidia Control Panel stalls", FixControlPanelStalls),
                 ("Setting up 3D Vision parameters", Setup3DVParams),
                 ("Enabling 3D", Enable3D),
             };
